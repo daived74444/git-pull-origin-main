@@ -1,0 +1,16 @@
+{
+    // Editor settings
+    "editor.fontSize": 14,
+    "editor.fontFamily": "Consolas, 'Courier New', monospace",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.wordWrap": "on",
+    // Files settings
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    // Workbench settings
+    "workbench.colorTheme": "Dracula",
+    "workbench.iconTheme": "material-icon-theme",
+    // Terminal settings
+    "terminal.integrated.fontSize": 14
+}

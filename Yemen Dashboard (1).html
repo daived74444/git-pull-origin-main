@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yemen Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      padding: 20px;
+      direction: rtl;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    h1 {
+      color: #4CAF50;
+      font-size: 2.5em;
+      margin-bottom: 0.5em;
+    }
+    h2 {
+      color: #555;
+      font-size: 2em;
+      margin-top: 2em;
+    }
+    .chart-container {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .input-container {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .input-container label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 1.2em;
+      color: #555;
+    }
+    .input-container input {
+      width: 100%;
+      max-width: 300px;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .input-container button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .input-container button:hover {
+      background-color: #45a049;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>لوحة التحكم الشاملة لليمن</h1>
+    <div class="footer">بواسطة Dawood Shorihi</div>
+
+    <div class="input-container">
+      <label for="year">حدد السنة:</label>
+      <input type="number" id="year" min="2020" max="2030" step="1" value="2020">
+      <button onclick="updateCharts()">تحديث الرسوم البيانية</button>
+    </div>
+
+    <div class="chart-container">
+      <h2>تحليل النمو الاقتصادي</h2>
+      <canvas id="economicChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>تحليل تأثير الصراعات</h2>
+      <canvas id="conflictChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>تحليل الأسواق</h2>
+      <canvas id="marketChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>المؤشرات السياسية والاجتماعية</h2>
+      <canvas id="politicalChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const economicData = {
+      2020: { gdp: 20, unemployment: 15, inflation: 10 },
+      2021: { gdp: 22, unemployment: 14, inflation: 9 },
+      2022: { gdp: 24, unemployment: 13, inflation: 8 },
+      2023: { gdp: 26, unemployment: 12, inflation: 7 },
+      2024: { gdp: 28, unemployment: 11, inflation: 6 },
+      2025: { gdp: 30, unemployment: 10, inflation: 5 },
+      2026: { gdp: 32, unemployment: 9, inflation: 4 },
+      2027: { gdp: 34, unemployment: 8, inflation: 3 },
+      2028: { gdp: 36, unemployment: 7, inflation: 2 },
+      2029: { gdp: 38, unemployment: 6, inflation: 1 },
+      2030: { gdp: 40, unemployment: 5, inflation: 0.5 },
+    };
+
+    const conflictData = {
+      2020: { displacement: 3000, casualties: 1500, economicImpact: 200 },
+      2021: { displacement: 2800, casualties: 1400, economicImpact: 180 },
+      2022: { displacement: 2600, casualties: 1300, economicImpact: 160 },
+      2023: { displacement: 2400, casualties: 1200, economicImpact: 140 },
+      2024: { displacement: 2200, casualties: 1100, economicImpact: 120 },
+      2025: { displacement: 2000, casualties: 1000, economicImpact: 100 },
+      2026: { displacement: 1800, casualties: 900, economicImpact: 80 },
+      2027: { displacement: 1600, casualties: 800, economicImpact: 60 },
+      2028: { displacement: 1400, casualties: 700, economicImpact: 40 },
+      2029: { displacement: 1200, casualties: 600, economicImpact: 20 },
+      2030: { displacement: 1000, casualties: 500, economicImpact: 10 },
+    };
+
+    const marketData = {
+      2020: { averageIncome: 2000, companies: 100, inflationImpact: 10 },
+      2021: { averageIncome: 2100, companies: 110, inflationImpact: 9 },
+      2022: { averageIncome: 2200, companies: 120, inflationImpact: 8 },
+      2023: { averageIncome: 2300, companies: 130, inflationImpact: 7 },
+      2024: { averageIncome: 2400, companies: 140, inflationImpact: 6 },
+      2025: { averageIncome: 2500, companies: 150, inflationImpact: 5 },
+      2026: { averageIncome: 2600, companies: 160, inflationImpact: 4 },
+      2027: { averageIncome: 2700, companies: 170, inflationImpact: 3 },
+      2028: { averageIncome: 2800, companies: 180, inflationImpact: 2 },
+      2029: { averageIncome: 2900, companies: 190, inflationImpact: 1 },
+      2030: { averageIncome: 3000, companies: 200, inflationImpact: 0.5 },
+    };
+
+    const politicalData = {
+      2020: { governance: 3, stability: 2 },
+      2021: { governance: 3.5, stability: 2.5 },
+      2022: { governance: 4, stability: 3 },
+      2023: { governance: 4.5, stability: 3.5 },
+      2024: { governance: 5, stability: 4 },
+      2025: { governance: 5.5, stability: 4.5 },
+      2026: { governance: 6, stability: 5 },
+      2027: { governance: 6.5, stability: 5.5 },
+      2028: { governance: 7, stability: 6 },
+      2029: { governance: 7.5, stability: 6.5 },
+      2030: { governance: 8, stability: 7 },
+    };
+
+    let economicChart, conflictChart, marketChart, politicalChart;
+
+    function createCharts() {
+      const year = document.getElementById('year').value;
+
+      // Economic Chart
+      const ctxEconomic = document.getElementById('economicChart').getContext('2d');
+      economicChart = new Chart(ctxEconomic, {
+        type: 'line',
+        data: {
+          labels: Object.keys(economicData),
+          datasets: [
+            { label: 'الناتج المحلي الإجمالي', data: Object.values(economicData).map(d => d.gdp), borderColor: '#8884d8', fill: false },
+            { label: 'البطالة', data: Object.values(economicData).map(d => d.unemployment), borderColor: '#82ca9d', fill: false },
+            { label: 'التضخم', data: Object.values(economicData).map(d => d.inflation), borderColor: '#ffc658', fill: false },
+          ],
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } } },
+      });
+
+      // Conflict Chart
+      const ctxConflict = document.getElementById('conflictChart').getContext('2d');
+      conflictChart = new Chart(ctxConflict, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(conflictData),
+          datasets: [
+            { label: 'النزوح', data: Object.values(conflictData).map(d => d.displacement), backgroundColor: '#8884d8' },
+            { label: 'الضحايا', data: Object.values(conflictData).map(d => d.casualties), backgroundColor: '#82ca9d' },
+            { label: 'التأثير الاقتصادي', data: Object.values(conflictData).map(d => d.economicImpact), backgroundColor: '#ffc658' },
+          ],
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } } },
+      });
+
+      // Market Chart
+      const ctxMarket = document.getElementById('marketChart').getContext('2d');
+      marketChart = new Chart(ctxMarket, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'بيانات السوق',
+            data: Object.keys(marketData).map(year => ({
+              x: marketData[year].averageIncome,
+              y: marketData[year].companies,
+            })),
+            backgroundColor: '#8884d8',
+          }],
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } } },
+      });
+
+      // Political Chart
+      const ctxPolitical = document.getElementById('politicalChart').getContext('2d');
+      politicalChart = new Chart(ctxPolitical, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(politicalData),
+          datasets: [
+            { label: 'الحوكمة', data: Object.values(politicalData).map(d => d.governance), backgroundColor: '#8884d8' },
+            { label: 'الاستقرار', data: Object.values(politicalData).map(d => d.stability), backgroundColor: '#82ca9d' },
+          ],
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } } },
+      });
+    }
+
+    function updateCharts() {
+      const year = document.getElementById('year').value;
+
+      // Update Economic Chart
+      economicChart.data.labels = Object.keys(economicData);
+      economicChart.data.datasets[0].data = Object.values(economicData).map(d => d.gdp);
+      economicChart.data.datasets[1].data = Object.values(economicData).map(d => d.unemployment);
+      economicChart.data.datasets[2].data = Object.values(economicData).map(d => d.inflation);
+      economicChart.update();
+
+      // Update Conflict Chart
+      conflictChart.data.labels = Object.keys(conflictData);
+      conflictChart.data.datasets[0].data = Object.values(conflictData).map(d => d.displacement);
+      conflictChart.data.datasets[1].data = Object.values(conflictData).map(d => d.casualties);
+      conflictChart.data.datasets[2].data = Object.values(conflictData).map(d => d.economicImpact);
+      conflictChart.update();
+
+      // Update Market Chart
+      marketChart.data.datasets[0].data = Object.keys(marketData).map(year => ({
+        x: marketData[year].averageIncome,
+        y: marketData[year].companies,
+      }));
+      marketChart.update();
+
+      // Update Political Chart
+      politicalChart.data.labels = Object.keys(politicalData);
+      politicalChart.data.datasets[0].data = Object.values(politicalData).map(d => d.governance);
+      politicalChart.data.datasets[1].data = Object.values(politicalData).map(d => d.stability);
+      politicalChart.update();
+    }
+
+    window.onload = createCharts;
+  </script>
+</body>
+</html>
